@@ -22,41 +22,32 @@ function checkUserAddress(userAddress) {
     
     document.getElementById('result').innerHTML = '';
 
-    fetch('users.csv')
-        .then(response => response.text())
-        .then(csvText => {
-            Papa.parse(csvText, {
-                header: true,
-                skipEmptyLines: true,
-                step: function(row) {
-                    if (row.data.userAddress.toLowerCase().trim() === userAddress) {
-                        const xpTotal = parseInt(row.data.xpTotal, 10);
-                        const isEligible = xpTotal > 200000;
-                        displayResult(Object.keys(row.data), Object.values(row.data), isEligible);
-                        this.abort();
-                    }
-                },
-                complete: function() {
-                    clearInterval(loadingInterval);
-                    loadingElement.style.display = 'none';
-                    if (document.getElementById('result').innerHTML === '') {
-                        document.getElementById('result').innerText = `Wallet address ${userAddress} not found in the data try other address.`;
-                    }
-                },
-                error: function(error) {
-                    clearInterval(loadingInterval);
-                    loadingElement.style.display = 'none';
-                    console.error('Error parsing the CSV file:', error);
-                    document.getElementById('result').innerText = `Error parsing the CSV file: ${error.message}`;
-                }
-            });
-        })
-        .catch(error => {
+    Papa.parse('users.csv', {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        step: function(row) {
+            if (row.data.userAddress.toLowerCase().trim() === userAddress) {
+                const xpTotal = parseInt(row.data.xpTotal, 10);
+                const isEligible = xpTotal > 200000;
+                displayResult(Object.keys(row.data), Object.values(row.data), isEligible);
+                this.abort();
+            }
+        },
+        complete: function() {
             clearInterval(loadingInterval);
             loadingElement.style.display = 'none';
-            console.error('Error fetching the CSV file:', error);
-            document.getElementById('result').innerText = `Error fetching the CSV file: ${error.message}`;
-        });
+            if (document.getElementById('result').innerHTML === '') {
+                document.getElementById('result').innerText = `Wallet address ${userAddress} not found in the data try other address.`;
+            }
+        },
+        error: function(error) {
+            clearInterval(loadingInterval);
+            loadingElement.style.display = 'none';
+            console.error('Error parsing the CSV file:', error);
+            document.getElementById('result').innerText = `Error parsing the CSV file: ${error.message}`;
+        }
+    });
 }
 
 function displayResult(headers, row, isEligible) {

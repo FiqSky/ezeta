@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-4500247414012171">
     <title>Zeta Wallet Checker</title>
     <link rel="icon" href="https://i.ibb.co.com/zsgDkqY/letter-z-logo-large.png">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-4500247414012171",
+        enable_page_level_ads: true
+      });
+    </script>
 </head>
 <body>
     <div id="container">
@@ -87,22 +95,23 @@
                 : '<div class="not-eligible">Not Eligible</div>';
             document.getElementById('result').innerHTML = resultHTML;
             document.getElementById('result').innerHTML += `
-                <div class="donate">
-                    <p>Donate some coffee:</p>
-                    <p><a id="walletLink" href="javascript:void(0)" onclick="copyToClipboard()">0xD7C21bADB698B6164fA71B4abF0A62c11F757324</a></p>
+                <div class="advertisement">
+                    <p>Mohon maaf, ada iklan di bawah ini:</p>
+                    <div id="ad">
+                        <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-client="ca-pub-4500247414012171"
+                            data-ad-slot="1234567890"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
                     <p>Eligible means more than 200k exp, and vice versa</p>
                     <p>This website does not collect any data just to check the data because the data is too much and big, cheers</p>
                 </div>
             `;
-        }
-
-        function copyToClipboard() {
-            const walletAddress = '0xD7C21bADB698B6164fA71B4abF0A62c11F757324';
-            navigator.clipboard.writeText(walletAddress).then(function() {
-                alert('Wallet address copied to clipboard!');
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
         }
     </script>
 </body>

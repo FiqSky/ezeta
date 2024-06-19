@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeta Wallet Checker</title>
+    <link rel="icon" href="https://i.ibb.co.com/zsgDkqY/letter-z-logo-large.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    <div id="container">
+        <header>
+            <h1>Check Wallet Address</h1>
+        </header>
+        <main>
+            <form id="userAddressForm">
+                <label for="userAddress">Wallet Address :</label>
+                <input type="text" id="userAddress" name="userAddress" required placeholder="Enter wallet address">
+                <button type="submit">Check</button>
+            </form>
+            <div id="loading">Checking data...</div>
+            <div id="result"></div>
+        </main>
+        <footer>
+            <p>&copy; 2024 Build with Love ❤️🐱 by Community. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('userAddressForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const userAddress = document.getElementById('userAddress').value.toLowerCase().trim();
+            checkUserAddress(userAddress);
+        });
+
+        function checkUserAddress(userAddress) {
+            const loadingMessages = ['Loading...', 'Please wait...', 'Wait a minute...', 'Checking data...', 'Calm down...', 'So many data, wait...', 'Almost done...'];
+            let messageIndex = 0;
+            const loadingElement = document.getElementById('loading');
+            
+            loadingElement.style.display = 'block';
+            const loadingInterval = setInterval(() => {
+                loadingElement.innerText = loadingMessages[messageIndex];
+                messageIndex = (messageIndex + 1) % loadingMessages.length;
+            }, 5000);
+            
+            document.getElementById('result').innerHTML = '';
+
+            Papa.parse('users.csv', {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                step: function(row) {
+                    if (row.data.userAddress.toLowerCase().trim() === userAddress) {
+                        const xpTotal = parseInt(row.data.xpTotal, 10);
+                        const isEligible = xpTotal > 200000;
+                        displayResult(Object.keys(row.data), Object.values(row.data), isEligible);
+                        this.abort();
+                    }
+                },
+                complete: function() {
+                    clearInterval(loadingInterval);
+                    loadingElement.style.display = 'none';
+                    if (document.getElementById('result').innerHTML === '') {
+                        document.getElementById('result').innerText = `Wallet address ${userAddress} not found in the data try other address.`;
+                    }
+                },
+                error: function(error) {
+                    clearInterval(loadingInterval);
+                    loadingElement.style.display = 'none';
+                    console.error('Error parsing the CSV file:', error);
+                    document.getElementById('result').innerText = `Error parsing the CSV file: ${error.message}`;
+                }
+            });
+        }
+
+        function displayResult(headers, row, isEligible) {
+            document.getElementById('loading').style.display = 'none';
+            let resultHTML = '<table>';
+            for (let i = 0; i < headers.length; i++) {
+                resultHTML += `<tr><th>${headers[i]}</th><td>${row[i]}</td></tr>`;
+            }
+            resultHTML += '</table>';
+            resultHTML += isEligible 
+                ? '<div class="eligible">Eligible</div>' 
+                : '<div class="not-eligible">Not Eligible</div>';
+            document.getElementById('result').innerHTML = resultHTML;
+            document.getElementById('result').innerHTML += `
+                <div class="donate">
+                    <p>Donate some coffee:</p>
+                    <p><a id="walletLink" href="javascript:void(0)" onclick="copyToClipboard()">0xD7C21bADB698B6164fA71B4abF0A62c11F757324</a></p>
+                    <p>Eligible means more than 200k exp, and vice versa</p>
+                    <p>This website does not collect any data just to check the data because the data is too much and big, cheers</p>
+                </div>
+            `;
+        }
+
+        function copyToClipboard() {
+            const walletAddress = '0xD7C21bADB698B6164fA71B4abF0A62c11F757324';
+            navigator.clipboard.writeText(walletAddress).then(function() {
+                alert('Wallet address copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
